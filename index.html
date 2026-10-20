@@ -102,6 +102,11 @@ footer{font-size:12px;color:var(--muted);padding-top:8px}
 @media (prefers-reduced-motion: reduce){.chev{transition:none}}
 
 #buscar-ley{font-family:var(--font-ui)}
+.checks{display:flex;flex-direction:column;gap:10px}
+.check{display:flex;align-items:flex-start;gap:10px;font-size:15px;font-weight:500;color:var(--fg);margin:0;cursor:pointer}
+.check input{width:20px;height:20px;flex:none;margin:1px 0 0;padding:0;accent-color:var(--accent)}
+.result.neutro{background:var(--surface)}
+.result.neutro .tag,.result.neutro .verdict{color:var(--fg)}
 .leyes{display:flex;flex-direction:column;gap:8px}
 .grupo{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .grupo-titulo{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;
@@ -219,6 +224,65 @@ footer{font-size:12px;color:var(--muted);padding-top:8px}
     </div>
    </section>
 
+   <section class="tool" id="t-alcohol">
+    <button class="tool-head" type="button" aria-expanded="false" aria-controls="b-alcohol">
+      <span class="tool-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="3"/><rect x="9.5" y="5" width="5" height="4" rx="1"/><path d="M12 13v3"/><path d="M10.5 19h3"/></svg>
+      </span>
+      <span class="tool-text">
+        <span class="tool-title">Calculadora de alcoholemia</span>
+        <span class="tool-desc">Sin infracción, administrativa o penal según la tasa</span>
+      </span>
+      <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="tool-body" id="b-alcohol" hidden>
+      <form class="card" id="fa" autocomplete="off">
+        <div>
+          <label for="a-conductor">Conductor</label>
+          <select id="a-conductor">
+            <option value="general">General</option>
+            <option value="novel">Novel (menos de 2 años) o profesional</option>
+          </select>
+        </div>
+        <div class="row">
+          <div>
+            <label for="a-tasa">Tasa medida</label>
+            <input id="a-tasa" type="number" inputmode="decimal" min="0" step="0.01" value="0.48">
+          </div>
+          <div>
+            <label for="a-medio">Unidad</label>
+            <select id="a-medio">
+              <option value="aire" selected>mg/l aire</option>
+              <option value="sangre">g/l sangre</option>
+            </select>
+          </div>
+        </div>
+        <div id="a-margen-wrap">
+          <label for="a-margen">Margen de error del etilómetro</label>
+          <select id="a-margen">
+            <option value="periodica" selected>Aplicar: más de 1 año en servicio (0,030 o 7,5 %)</option>
+            <option value="nuevo">Aplicar: menos de 1 año o reparado (0,020 o 5 %)</option>
+            <option value="no">No aplicar</option>
+          </select>
+        </div>
+        <div class="checks">
+          <label class="check"><input type="checkbox" id="a-sintomas"> Síntomas evidentes, conducción irregular o accidente</label>
+          <label class="check"><input type="checkbox" id="a-negativa"> Se niega a realizar la prueba</label>
+        </div>
+      </form>
+
+      <div class="result idle" id="a-res" aria-live="polite">
+        <span class="tag" id="a-tag"></span>
+        <span class="verdict" id="a-verdict">Introduce una tasa</span>
+        <span class="law" id="a-law"></span>
+        <span class="limit" id="a-limit"></span>
+        <span class="aviso" id="a-aviso" hidden></span>
+      </div>
+
+      <p class="note">Tasas del art. 20 del Reglamento General de Circulación. Delito del art. 379.2 CP a partir de más de 0,60 mg/l en aire (1,2 g/l en sangre). Entre 0,40 y 0,60 mg/l, la Instrucción 3/2006 de la Fiscalía manda valorar síntomas, infracciones y accidente. Margen según la Orden ICT/155/2020, redondeando a favor del conductor (STS 788/2023).</p>
+    </div>
+   </section>
+
    <section class="tool" id="t-leyes">
     <button class="tool-head" type="button" aria-expanded="false" aria-controls="b-leyes">
       <span class="tool-icon" aria-hidden="true">
@@ -304,6 +368,65 @@ function calc(){
 ["droga","cantidad","unidad"].forEach(id=>{$(id).addEventListener("input",calc);$(id).addEventListener("change",calc)});
 $("f").addEventListener("submit",e=>e.preventDefault());
 calc();
+
+// ---------- Alcoholemia (todo se calcula en mg/l de aire; sangre g/l = 2 × aire) ----------
+function calcAlcohol(){
+  const tipo = $("a-conductor").value;
+  const medio = $("a-medio").value;
+  const bruto = parseFloat($("a-tasa").value);
+  const sint = $("a-sintomas").checked;
+  const neg = $("a-negativa").checked;
+  const res = $("a-res");
+  $("a-margen-wrap").hidden = medio !== "aire" || neg;
+  const pinta = (clase, tag, verdict, law, limit, aviso) => {
+    res.className = "result " + clase;
+    $("a-tag").textContent = tag; $("a-verdict").textContent = verdict;
+    $("a-law").textContent = law; $("a-limit").textContent = limit || "";
+    $("a-aviso").hidden = !aviso; $("a-aviso").textContent = aviso || "";
+  };
+  if (neg) {
+    return pinta("pen","Delito contra la seguridad vial","Vía penal",
+      "Art. 383 CP: negativa a someterse a las pruebas. Prisión de 6 meses a 1 año y privación del permiso de más de 1 hasta 4 años.");
+  }
+  if (!(bruto >= 0) || $("a-tasa").value === "") return pinta("idle","","Introduce una tasa","");
+
+  // Pasar a aire y aplicar margen del etilómetro (solo en aire)
+  let aire = medio === "sangre" ? bruto / 2 : bruto;
+  let nota = "";
+  if (medio === "aire" && $("a-margen").value !== "no") {
+    const [abs, pct] = $("a-margen").value === "nuevo" ? [0.020, 0.05] : [0.030, 0.075];
+    const emp = Math.max(abs, aire * pct);
+    aire = Math.max(0, Math.floor((aire - emp) * 100 + 1e-9) / 100);
+    nota = `Medida ${bruto.toLocaleString("es-ES",{minimumFractionDigits:2})} mg/l → corregida ${aire.toLocaleString("es-ES",{minimumFractionDigits:2})} mg/l`;
+  } else {
+    nota = `Equivale a ${aire.toLocaleString("es-ES",{maximumFractionDigits:3})} mg/l en aire`;
+  }
+  const lim = tipo === "novel" ? 0.15 : 0.25;
+  const doble = tipo === "novel" ? 0.30 : 0.50;
+  const limTxt = tipo === "novel" ? "0,15 mg/l (0,3 g/l)" : "0,25 mg/l (0,5 g/l)";
+
+  if (aire > 0.60) {
+    return pinta("pen","Delito contra la seguridad vial","Vía penal",
+      "Art. 379.2 CP: tasa superior a 0,60 mg/l en aire. Prisión de 3 a 6 meses, multa de 6 a 12 meses o TBC de 31 a 90 días, y privación del permiso de más de 1 hasta 4 años.", nota);
+  }
+  if (sint && aire > 0.40) {
+    return pinta("pen","Delito · influencia del alcohol","Vía penal",
+      "Art. 379.2 CP (conducir bajo la influencia). Tramo 0,40–0,60 mg/l con síntomas, conducción irregular o accidente: Instrucción 3/2006 FGE.", nota,
+      "La tasa no basta por sí sola: hay que acreditar los síntomas o la conducción irregular en el atestado.");
+  }
+  if (aire <= lim) {
+    return pinta("neutro","Sin infracción por tasa","No supera el límite",
+      `Límite para este conductor: ${limTxt}.`, nota,
+      sint ? "Con síntomas evidentes puede valorarse el art. 379.2 CP aunque la tasa sea baja, si se acredita la influencia en la conducción." : "");
+  }
+  const grave = aire > doble;
+  return pinta("adm","Infracción administrativa muy grave","Vía administrativa",
+    `Art. 77.c LTSV. ${grave ? "Multa de 1.000 € y 6 puntos" : "Multa de 500 € y 4 puntos"} (1.000 € si hay reincidencia en el último año).`, nota,
+    sint ? "Con síntomas evidentes puede valorarse el art. 379.2 CP (conducir bajo la influencia), aunque fuera del tramo 0,40–0,60 de la Instrucción 3/2006 es más difícil de sostener." : "");
+}
+["a-conductor","a-tasa","a-medio","a-margen","a-sintomas","a-negativa"].forEach(id=>{$(id).addEventListener("input",calcAlcohol);$(id).addEventListener("change",calcAlcohol)});
+$("fa").addEventListener("submit",e=>e.preventDefault());
+calcAlcohol();
 
 // ---------- Guía de leyes (enlaces ELI al texto consolidado del BOE) ----------
 const BOE = "https://www.boe.es/eli/";
