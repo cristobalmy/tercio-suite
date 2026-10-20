@@ -66,6 +66,21 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .brand-row{display:flex;align-items:center;gap:14px}
 .brand-text{display:flex;flex-direction:column;gap:2px;min-width:0}
 .logo{flex:none;width:52px;height:52px;border-radius:12px;display:block}
+.brand-text{flex:1}
+.btn-instalar{flex:none;display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:14px;font-weight:600;
+  color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer}
+.btn-instalar:hover{border-color:var(--accent)}
+.btn-instalar:focus-visible,.pi-cerrar:focus-visible,.pi-tabs button:focus-visible,.pi-directo:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.panel-instalar{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.pi-cabecera{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:16px}
+.pi-cerrar{all:unset;cursor:pointer;color:var(--muted);display:grid;place-items:center;width:32px;height:32px;border-radius:8px}
+.pi-intro{margin:0;font-size:14px;color:var(--muted)}
+.pi-directo{font:inherit;font-weight:600;font-size:15px;color:#fff;background:var(--accent);border:0;border-radius:8px;padding:12px;cursor:pointer}
+.pi-tabs{display:flex;gap:6px;background:var(--bg);border-radius:9px;padding:4px}
+.pi-tabs button{flex:1;font:inherit;font-size:14px;font-weight:600;color:var(--muted);background:transparent;border:0;border-radius:6px;padding:8px;cursor:pointer}
+.pi-tabs button[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.pi-pasos{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px;font-size:15px}
+.pi-pasos li::marker{color:var(--accent);font-weight:700}
 .brand h1{font-size:30px;letter-spacing:-.01em}
 .brand p{margin:0;color:var(--muted);font-size:15px}
 .section-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
@@ -120,8 +135,39 @@ footer{font-size:12px;color:var(--muted);padding-top:8px}
         <span class="eyebrow">Tercio Suite</span>
         <h1>Herramientas</h1>
       </div>
+      <button class="btn-instalar" id="btn-instalar" type="button" aria-expanded="false" aria-controls="panel-instalar" title="Instalar en el móvil">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11l3 3 3-3"/><path d="M10.5 18.5h3"/></svg>
+        <span>Instalar</span>
+      </button>
     </div>
     <p>Utilidades rápidas para consultar en el momento.</p>
+
+    <div class="panel-instalar" id="panel-instalar" hidden>
+      <div class="pi-cabecera">
+        <strong>Instalar como app</strong>
+        <button class="pi-cerrar" id="pi-cerrar" type="button" aria-label="Cerrar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <p class="pi-intro">Tendrás el icono en la pantalla de inicio y funcionará también sin cobertura.</p>
+      <button class="pi-directo" id="pi-directo" type="button" hidden>Instalar ahora</button>
+      <div class="pi-tabs" role="tablist">
+        <button type="button" role="tab" id="tab-android" aria-selected="true">Android</button>
+        <button type="button" role="tab" id="tab-iphone" aria-selected="false">iPhone</button>
+      </div>
+      <ol class="pi-pasos" id="pasos-android">
+        <li>Abre esta web en <b>Chrome</b>.</li>
+        <li>Pulsa el menú <b>⋮</b> (tres puntos, arriba a la derecha).</li>
+        <li>Elige <b>Instalar aplicación</b> o <b>Añadir a pantalla de inicio</b>.</li>
+        <li>Confirma con <b>Instalar</b>.</li>
+      </ol>
+      <ol class="pi-pasos" id="pasos-iphone" hidden>
+        <li>Abre esta web en <b>Safari</b>.</li>
+        <li>Pulsa el botón <b>Compartir</b> (el cuadrado con la flecha hacia arriba, abajo en el centro).</li>
+        <li>Desliza y elige <b>Añadir a pantalla de inicio</b>.</li>
+        <li>Pulsa <b>Añadir</b>, arriba a la derecha.</li>
+      </ol>
+    </div>
   </header>
 
   <span class="section-label">Disponibles</span>
@@ -330,6 +376,34 @@ pintarLeyes();
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
 }
+
+// Instrucciones de instalación
+(function(){
+  const enApp = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  const btn = $("btn-instalar"), panel = $("panel-instalar");
+  if (enApp) { btn.hidden = true; return; }
+  const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  function pestaña(cual){
+    $("tab-android").setAttribute("aria-selected", String(cual==="android"));
+    $("tab-iphone").setAttribute("aria-selected", String(cual==="iphone"));
+    $("pasos-android").hidden = cual!=="android";
+    $("pasos-iphone").hidden = cual!=="iphone";
+  }
+  pestaña(esIOS ? "iphone" : "android");
+  $("tab-android").addEventListener("click",()=>pestaña("android"));
+  $("tab-iphone").addEventListener("click",()=>pestaña("iphone"));
+  function abrir(sí){ panel.hidden = !sí; btn.setAttribute("aria-expanded", String(sí)); }
+  btn.addEventListener("click",()=>abrir(panel.hidden));
+  $("pi-cerrar").addEventListener("click",()=>abrir(false));
+  // En Chrome/Android se puede instalar con un solo toque
+  let aviso = null;
+  window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); aviso = e; $("pi-directo").hidden = false; });
+  $("pi-directo").addEventListener("click", async () => {
+    if (!aviso) return;
+    aviso.prompt(); await aviso.userChoice.catch(()=>{}); aviso = null; $("pi-directo").hidden = true;
+  });
+  window.addEventListener("appinstalled", () => { abrir(false); btn.hidden = true; });
+})();
 
 // Desplegar / plegar herramientas
 document.querySelectorAll(".tool").forEach(tool=>{
