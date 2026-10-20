@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Calculadora orientativa: vía administrativa o penal según la cantidad de droga.">
+<meta name="description" content="Tercio Suite: herramientas prácticas. Calculadora orientativa de vía administrativa o penal según la cantidad de droga.">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
-<title>Calculadora de Tenencia</title>
+<title>Tercio Suite</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-/* Layout: una sola columna centrada, formulario arriba y veredicto grande debajo */
+/* Layout: portada de una columna con lista de herramientas; cada herramienta se despliega debajo de su tarjeta */
 :root{
   --bg:#eef1f5; --surface:#ffffff; --fg:#17202c; --muted:#5a6676; --line:#d5dbe3;
   --accent:#1f3a5f;
@@ -53,15 +53,51 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 
 .note{font-size:13px;color:var(--muted);margin:0}
 .aviso{font-size:13px;color:var(--fg);border-top:1px solid var(--line);padding-top:10px;margin-top:6px}
+
+.brand{display:flex;flex-direction:column;gap:6px;padding-bottom:8px}
+.brand h1{font-size:30px;letter-spacing:-.01em}
+.brand p{margin:0;color:var(--muted);font-size:15px}
+.section-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.tools{display:flex;flex-direction:column;gap:12px}
+.tool{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tool-head{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:14px;padding:18px 20px;cursor:pointer}
+.tool-head:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:12px}
+.tool-icon{flex:none;width:40px;height:40px;border-radius:9px;background:var(--bg);color:var(--accent);display:grid;place-items:center}
+.tool-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.tool-title{font-weight:600;font-size:17px}
+.tool-desc{font-size:14px;color:var(--muted)}
+.chev{flex:none;color:var(--muted);transition:transform .2s}
+.tool.open .chev{transform:rotate(180deg)}
+.tool-body{border-top:1px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:16px;background:var(--bg)}
+.tool-body .card{padding:16px}
+.tool-body select,.tool-body input{background:var(--surface)}
+footer{font-size:12px;color:var(--muted);padding-top:8px}
+@media (prefers-reduced-motion: reduce){.chev{transition:none}}
 </style>
 </head>
 <body>
 
 <div class="wrap">
-  <header>
-    <span class="eyebrow">Herramienta orientativa</span>
-    <h1>¿Vía administrativa o penal?</h1>
+  <header class="brand">
+    <span class="eyebrow">Tercio Suite</span>
+    <h1>Herramientas</h1>
+    <p>Utilidades rápidas para consultar en el momento.</p>
   </header>
+
+  <span class="section-label">Disponibles</span>
+  <div class="tools">
+   <section class="tool" id="t-drogas">
+    <button class="tool-head" type="button" aria-expanded="false" aria-controls="b-drogas">
+      <span class="tool-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3"/><path d="M5 7h14"/><path d="M7 7l-3 7a3 3 0 0 0 6 0z"/><path d="M17 7l-3 7a3 3 0 0 0 6 0z"/><path d="M12 6v14"/><path d="M8 20h8"/></svg>
+      </span>
+      <span class="tool-text">
+        <span class="tool-title">Calculadora de drogas</span>
+        <span class="tool-desc">¿Vía administrativa o penal según la cantidad?</span>
+      </span>
+      <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="tool-body" id="b-drogas" hidden>
 
   <form class="card" id="f" autocomplete="off">
     <div>
@@ -94,6 +130,11 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
   </div>
 
   <p class="note">Umbral: acopio de 5 días de consumo según el Instituto Nacional de Toxicología, aplicado por el Tribunal Supremo (Pleno de 19/10/2001). La cantidad es un indicio, no una regla fija: otros indicios de venta pueden llevar a la vía penal con menos cantidad.</p>
+    </div>
+   </section>
+  </div>
+
+  <footer>Información orientativa. No sustituye el criterio jurídico ni la valoración de cada caso.</footer>
 </div>
 
 <script>
@@ -154,6 +195,18 @@ function calc(){
 ["droga","cantidad","unidad"].forEach(id=>{$(id).addEventListener("input",calc);$(id).addEventListener("change",calc)});
 $("f").addEventListener("submit",e=>e.preventDefault());
 calc();
+
+// Desplegar / plegar herramientas
+document.querySelectorAll(".tool").forEach(tool=>{
+  const btn = tool.querySelector(".tool-head");
+  const body = tool.querySelector(".tool-body");
+  btn.addEventListener("click",()=>{
+    const open = body.hidden;
+    body.hidden = !open;
+    tool.classList.toggle("open",open);
+    btn.setAttribute("aria-expanded",String(open));
+  });
+});
 </script>
 </body>
 </html>
