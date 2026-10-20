@@ -13,39 +13,38 @@
 <meta name="theme-color" content="#0f2a4a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Tercio Suite">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
 /* Layout: portada de una columna con lista de herramientas; cada herramienta se despliega debajo de su tarjeta */
 :root{
-  --bg:#eef1f5; --surface:#ffffff; --fg:#17202c; --muted:#5a6676; --line:#d5dbe3;
-  --accent:#1f3a5f;
-  --adm:#1d6b45; --adm-bg:#e3f2ea;
-  --pen:#a3261c; --pen-bg:#fbe7e4;
+  --cab:#0f2a4a; --bg:#f6f8fb; --surface:#ffffff; --fg:#1b2733; --muted:#6a7684; --line:#dde2e9;
+  --accent:#2f7bd8; --navy:#0f2a4a; --tint:#e8f1fd;
+  --adm:#1e8e4e; --adm-bg:#e3f4ea;
+  --pen:#c0392b; --pen-bg:#fbd5d0;
   --font-ui:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --font-num:"IBM Plex Mono",ui-monospace,"SF Mono",monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0f141b; --surface:#18202b; --fg:#e6ebf2; --muted:#98a4b5; --line:#2b3644;
-  --accent:#8fb3e0; --adm:#6fd3a0; --adm-bg:#14301f; --pen:#ff8a7d; --pen-bg:#3a1714; color-scheme:dark}}
+  --cab:#0a1424; --bg:#0d1420; --surface:#151f30; --fg:#e6ebf5; --muted:#8d9ab3; --line:#2a374e;
+  --accent:#4a90e2; --navy:#a9c8f5; --tint:#1b2c47; --adm:#4fd08a; --adm-bg:#16301f; --pen:#ff7b6b; --pen-bg:#4d2323; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0f141b; --surface:#18202b; --fg:#e6ebf2; --muted:#98a4b5; --line:#2b3644;
-  --accent:#8fb3e0; --adm:#6fd3a0; --adm-bg:#14301f; --pen:#ff8a7d; --pen-bg:#3a1714; color-scheme:dark}
+  --cab:#0a1424; --bg:#0d1420; --surface:#151f30; --fg:#e6ebf5; --muted:#8d9ab3; --line:#2a374e;
+  --accent:#4a90e2; --navy:#a9c8f5; --tint:#1b2c47; --adm:#4fd08a; --adm-bg:#16301f; --pen:#ff7b6b; --pen-bg:#4d2323; color-scheme:dark}
 
 body{background:var(--bg);color:var(--fg);font-family:var(--font-ui);font-size:16px;line-height:1.5}
-.wrap{max-width:520px;margin:0 auto;padding-block:32px 48px;
+.wrap{max-width:520px;margin:0 auto;padding-block:24px 48px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
   display:flex;flex-direction:column;gap:20px}
-header{display:flex;flex-direction:column;gap:4px}
 .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
 h1{margin:0;font-size:26px;line-height:1.2;text-wrap:balance}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:16px}
 label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px}
-select,input{width:100%;box-sizing:border-box;font:inherit;font-size:17px;color:var(--fg);background:var(--bg);
+select,input{width:100%;box-sizing:border-box;font:inherit;font-size:16px;text-overflow:ellipsis;color:var(--fg);background:var(--bg);
   border:1px solid var(--line);border-radius:8px;padding:12px}
 input{font-family:var(--font-num);font-variant-numeric:tabular-nums}
 select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.row{display:grid;grid-template-columns:1fr 110px;gap:12px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:12px}
 .row>div{min-width:0}
 
 .result{border-radius:10px;padding:22px 20px;display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);background:var(--surface)}
@@ -62,15 +61,22 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .note{font-size:13px;color:var(--muted);margin:0}
 .aviso{font-size:13px;color:var(--fg);border-top:1px solid var(--line);padding-top:10px;margin-top:6px}
 
-.brand{display:flex;flex-direction:column;gap:10px;padding-bottom:8px}
-.brand-row{display:flex;align-items:center;gap:14px}
-.brand-text{display:flex;flex-direction:column;gap:2px;min-width:0}
-.logo{flex:none;width:52px;height:52px;border-radius:12px;display:block}
-.brand-text{flex:1}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--cab)}
+.banda{background:var(--cab);color:#fff}
+.banda-in{max-width:520px;margin:0 auto;box-sizing:border-box;min-height:60px;padding-block:10px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;align-items:center;justify-content:space-between;gap:12px}
+.marca{display:flex;align-items:center;gap:10px;min-width:0;font-weight:700;font-size:18px}
+.marca span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logo{flex:none;width:36px;height:36px;border-radius:8px;display:block}
 .btn-instalar{flex:none;display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:14px;font-weight:600;
-  color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer}
-.btn-instalar:hover{border-color:var(--accent)}
-.btn-instalar:focus-visible,.pi-cerrar:focus-visible,.pi-tabs button:focus-visible,.pi-directo:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  color:#fff;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:7px 14px;cursor:pointer}
+.btn-instalar:hover{background:rgba(255,255,255,.18)}
+.intro{display:flex;flex-direction:column;gap:4px}
+.intro h1{font-size:28px;letter-spacing:-.01em;color:var(--navy)}
+.intro p{margin:0;color:var(--muted);font-size:15px}
+.btn-instalar:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.pi-cerrar:focus-visible,.pi-tabs button:focus-visible,.pi-directo:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .panel-instalar{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
 .pi-cabecera{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:16px}
 .pi-cerrar{all:unset;cursor:pointer;color:var(--muted);display:grid;place-items:center;width:32px;height:32px;border-radius:8px}
@@ -81,14 +87,12 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .pi-tabs button[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
 .pi-pasos{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px;font-size:15px}
 .pi-pasos li::marker{color:var(--accent);font-weight:700}
-.brand h1{font-size:30px;letter-spacing:-.01em}
-.brand p{margin:0;color:var(--muted);font-size:15px}
 .section-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .tools{display:flex;flex-direction:column;gap:12px}
 .tool{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .tool-head{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:14px;padding:18px 20px;cursor:pointer}
 .tool-head:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:12px}
-.tool-icon{flex:none;width:40px;height:40px;border-radius:9px;background:var(--bg);color:var(--accent);display:grid;place-items:center}
+.tool-icon{flex:none;width:40px;height:40px;border-radius:9px;background:var(--tint);color:var(--accent);display:grid;place-items:center}
 .tool-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .tool-title{font-weight:600;font-size:17px}
 .tool-desc{font-size:14px;color:var(--muted)}
@@ -132,48 +136,49 @@ footer{font-size:12px;color:var(--muted);padding-top:8px}
 </head>
 <body>
 
+<header class="banda">
+  <div class="banda-in">
+    <div class="marca">
+      <img class="logo" src="icon.svg?v=1" alt="" width="36" height="36">
+      <span>Tercio Suite</span>
+    </div>
+    <button class="btn-instalar" id="btn-instalar" type="button" aria-expanded="false" aria-controls="panel-instalar" title="Instalar en el móvil">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11l3 3 3-3"/><path d="M10.5 18.5h3"/></svg>
+      <span>Instalar</span>
+    </button>
+  </div>
+</header>
 <div class="wrap">
-  <header class="brand">
-    <div class="brand-row">
-      <img class="logo" src="icon.svg?v=1" alt="" width="52" height="52">
-      <div class="brand-text">
-        <span class="eyebrow">Tercio Suite</span>
-        <h1>Herramientas</h1>
-      </div>
-      <button class="btn-instalar" id="btn-instalar" type="button" aria-expanded="false" aria-controls="panel-instalar" title="Instalar en el móvil">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11l3 3 3-3"/><path d="M10.5 18.5h3"/></svg>
-        <span>Instalar</span>
+  <div class="intro">
+    <h1>Herramientas</h1>
+    <p>Utilidades rápidas para consultar en el momento.</p>
+  </div>
+    <div class="panel-instalar" id="panel-instalar" hidden>
+    <div class="pi-cabecera">
+      <strong>Instalar como app</strong>
+      <button class="pi-cerrar" id="pi-cerrar" type="button" aria-label="Cerrar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
     </div>
-    <p>Utilidades rápidas para consultar en el momento.</p>
-
-    <div class="panel-instalar" id="panel-instalar" hidden>
-      <div class="pi-cabecera">
-        <strong>Instalar como app</strong>
-        <button class="pi-cerrar" id="pi-cerrar" type="button" aria-label="Cerrar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        </button>
-      </div>
-      <p class="pi-intro">Tendrás el icono en la pantalla de inicio y funcionará también sin cobertura.</p>
-      <button class="pi-directo" id="pi-directo" type="button" hidden>Instalar ahora</button>
-      <div class="pi-tabs" role="tablist">
-        <button type="button" role="tab" id="tab-android" aria-selected="true">Android</button>
-        <button type="button" role="tab" id="tab-iphone" aria-selected="false">iPhone</button>
-      </div>
-      <ol class="pi-pasos" id="pasos-android">
-        <li>Abre esta web en <b>Chrome</b>.</li>
-        <li>Pulsa el menú <b>⋮</b> (tres puntos, arriba a la derecha).</li>
-        <li>Elige <b>Instalar aplicación</b> o <b>Añadir a pantalla de inicio</b>.</li>
-        <li>Confirma con <b>Instalar</b>.</li>
-      </ol>
-      <ol class="pi-pasos" id="pasos-iphone" hidden>
-        <li>Abre esta web en <b>Safari</b>.</li>
-        <li>Pulsa el botón <b>Compartir</b> (el cuadrado con la flecha hacia arriba, abajo en el centro).</li>
-        <li>Desliza y elige <b>Añadir a pantalla de inicio</b>.</li>
-        <li>Pulsa <b>Añadir</b>, arriba a la derecha.</li>
-      </ol>
+    <p class="pi-intro">Tendrás el icono en la pantalla de inicio y funcionará también sin cobertura.</p>
+    <button class="pi-directo" id="pi-directo" type="button" hidden>Instalar ahora</button>
+    <div class="pi-tabs" role="tablist">
+      <button type="button" role="tab" id="tab-android" aria-selected="true">Android</button>
+      <button type="button" role="tab" id="tab-iphone" aria-selected="false">iPhone</button>
     </div>
-  </header>
+    <ol class="pi-pasos" id="pasos-android">
+      <li>Abre esta web en <b>Chrome</b>.</li>
+      <li>Pulsa el menú <b>⋮</b> (tres puntos, arriba a la derecha).</li>
+      <li>Elige <b>Instalar aplicación</b> o <b>Añadir a pantalla de inicio</b>.</li>
+      <li>Confirma con <b>Instalar</b>.</li>
+    </ol>
+    <ol class="pi-pasos" id="pasos-iphone" hidden>
+      <li>Abre esta web en <b>Safari</b>.</li>
+      <li>Pulsa el botón <b>Compartir</b> (el cuadrado con la flecha hacia arriba, abajo en el centro).</li>
+      <li>Desliza y elige <b>Añadir a pantalla de inicio</b>.</li>
+      <li>Pulsa <b>Añadir</b>, arriba a la derecha.</li>
+    </ol>
+  </div>
 
   <span class="section-label">Disponibles</span>
   <div class="tools">
@@ -241,7 +246,7 @@ footer{font-size:12px;color:var(--muted);padding-top:8px}
           <label for="a-conductor">Conductor</label>
           <select id="a-conductor">
             <option value="general">General</option>
-            <option value="novel">Novel (menos de 2 años) o profesional</option>
+            <option value="novel">Novel o profesional</option>
           </select>
         </div>
         <div class="row">
@@ -257,14 +262,6 @@ footer{font-size:12px;color:var(--muted);padding-top:8px}
             </select>
           </div>
         </div>
-        <div id="a-margen-wrap">
-          <label for="a-margen">Margen de error del etilómetro</label>
-          <select id="a-margen">
-            <option value="periodica" selected>Aplicar: más de 1 año en servicio (0,030 o 7,5 %)</option>
-            <option value="nuevo">Aplicar: menos de 1 año o reparado (0,020 o 5 %)</option>
-            <option value="no">No aplicar</option>
-          </select>
-        </div>
         <div class="checks">
           <label class="check"><input type="checkbox" id="a-sintomas"> Síntomas evidentes, conducción irregular o accidente</label>
           <label class="check"><input type="checkbox" id="a-negativa"> Se niega a realizar la prueba</label>
@@ -279,7 +276,7 @@ footer{font-size:12px;color:var(--muted);padding-top:8px}
         <span class="aviso" id="a-aviso" hidden></span>
       </div>
 
-      <p class="note">Tasas del art. 20 del Reglamento General de Circulación. Delito del art. 379.2 CP a partir de más de 0,60 mg/l en aire (1,2 g/l en sangre). Entre 0,40 y 0,60 mg/l, la Instrucción 3/2006 de la Fiscalía manda valorar síntomas, infracciones y accidente. Margen según la Orden ICT/155/2020, redondeando a favor del conductor (STS 788/2023).</p>
+      <p class="note">Tasas del art. 20 del Reglamento General de Circulación. Delito del art. 379.2 CP a partir de más de 0,60 mg/l en aire (1,2 g/l en sangre). Entre 0,40 y 0,60 mg/l, la Instrucción 3/2006 de la Fiscalía manda valorar síntomas, infracciones y accidente.</p>
     </div>
    </section>
 
@@ -377,7 +374,6 @@ function calcAlcohol(){
   const sint = $("a-sintomas").checked;
   const neg = $("a-negativa").checked;
   const res = $("a-res");
-  $("a-margen-wrap").hidden = medio !== "aire" || neg;
   const pinta = (clase, tag, verdict, law, limit, aviso) => {
     res.className = "result " + clase;
     $("a-tag").textContent = tag; $("a-verdict").textContent = verdict;
@@ -390,17 +386,9 @@ function calcAlcohol(){
   }
   if (!(bruto >= 0) || $("a-tasa").value === "") return pinta("idle","","Introduce una tasa","");
 
-  // Pasar a aire y aplicar margen del etilómetro (solo en aire)
-  let aire = medio === "sangre" ? bruto / 2 : bruto;
-  let nota = "";
-  if (medio === "aire" && $("a-margen").value !== "no") {
-    const [abs, pct] = $("a-margen").value === "nuevo" ? [0.020, 0.05] : [0.030, 0.075];
-    const emp = Math.max(abs, aire * pct);
-    aire = Math.max(0, Math.floor((aire - emp) * 100 + 1e-9) / 100);
-    nota = `Medida ${bruto.toLocaleString("es-ES",{minimumFractionDigits:2})} mg/l → corregida ${aire.toLocaleString("es-ES",{minimumFractionDigits:2})} mg/l`;
-  } else {
-    nota = `Equivale a ${aire.toLocaleString("es-ES",{maximumFractionDigits:3})} mg/l en aire`;
-  }
+  // Todo en aire: sangre g/l = 2 × aire mg/l
+  const aire = medio === "sangre" ? bruto / 2 : bruto;
+  const nota = medio === "sangre" ? `Equivale a ${aire.toLocaleString("es-ES",{maximumFractionDigits:3})} mg/l en aire` : "";
   const lim = tipo === "novel" ? 0.15 : 0.25;
   const doble = tipo === "novel" ? 0.30 : 0.50;
   const limTxt = tipo === "novel" ? "0,15 mg/l (0,3 g/l)" : "0,25 mg/l (0,5 g/l)";
@@ -424,7 +412,7 @@ function calcAlcohol(){
     `Art. 77.c LTSV. ${grave ? "Multa de 1.000 € y 6 puntos" : "Multa de 500 € y 4 puntos"} (1.000 € si hay reincidencia en el último año).`, nota,
     sint ? "Con síntomas evidentes puede valorarse el art. 379.2 CP (conducir bajo la influencia), aunque fuera del tramo 0,40–0,60 de la Instrucción 3/2006 es más difícil de sostener." : "");
 }
-["a-conductor","a-tasa","a-medio","a-margen","a-sintomas","a-negativa"].forEach(id=>{$(id).addEventListener("input",calcAlcohol);$(id).addEventListener("change",calcAlcohol)});
+["a-conductor","a-tasa","a-medio","a-sintomas","a-negativa"].forEach(id=>{$(id).addEventListener("input",calcAlcohol);$(id).addEventListener("change",calcAlcohol)});
 $("fa").addEventListener("submit",e=>e.preventDefault());
 calcAlcohol();
 
