@@ -435,6 +435,7 @@ const LEYES = [
   {g:"Tráfico", c:"Reglamento General de Circulación", r:"RD 1428/2003", t:"Real Decreto 1428/2003, de 21 de noviembre", u:"es/rd/2003/11/21/1428/con"},
   {g:"Tráfico", c:"Reglamento General de Conductores", r:"RD 818/2009", t:"Real Decreto 818/2009, de 8 de mayo", u:"es/rd/2009/05/08/818/con"},
   {g:"Tráfico", c:"Reglamento General de Vehículos", r:"RD 2822/1998", t:"Real Decreto 2822/1998, de 23 de diciembre", u:"es/rd/1998/12/23/2822/con"},
+  {g:"Tráfico", c:"Instrucción FGE sobre delitos de tráfico (alcoholemia)", r:"Instrucción 3/2006 FGE", t:"Instrucción 3/2006, de 3 de julio, de la Fiscalía General del Estado", url:"https://www.boe.es/buscar/doc.php?id=FIS-I-2006-00003"},
 
   {g:"Violencia y protección", c:"Violencia de género", r:"LO 1/2004", t:"Ley Orgánica 1/2004, de 28 de diciembre", u:"es/lo/2004/12/28/1/con"},
   {g:"Violencia y protección", c:"Libertad sexual", r:"LO 10/2022", t:"Ley Orgánica 10/2022, de 6 de septiembre", u:"es/lo/2022/09/06/10/con"},
@@ -469,7 +470,7 @@ function pintarLeyes(){
     div.appendChild(h);
     const cont = document.createElement("div"); cont.className="grupo-lista"; div.appendChild(cont);
     ls.forEach(l=>{
-      const a = document.createElement("a"); a.className="ley"; a.href=BOE+l.u; a.target="_blank"; a.rel="noopener";
+      const a = document.createElement("a"); a.className="ley"; a.href=l.url||BOE+l.u; a.target="_blank"; a.rel="noopener";
       a.innerHTML = '<span class="ley-text"><span class="ley-corto"></span><span class="ley-largo"></span><span class="ley-ref"></span></span>'+flecha;
       a.querySelector(".ley-corto").textContent=l.c;
       a.querySelector(".ley-largo").textContent=l.t;

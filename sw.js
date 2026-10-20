@@ -1,6 +1,6 @@
 // Tercio Suite: funciona sin conexión.
 // Al publicar cambios, sube el número de versión para que los móviles descarguen la nueva.
-const VERSION = "tercio-suite-v4";
+const VERSION = "tercio-suite-v5";
 const ARCHIVOS = [
   "./",
   "./index.html",
