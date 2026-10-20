@@ -80,6 +80,19 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 footer{font-size:12px;color:var(--muted);padding-top:8px}
 .derechos{color:var(--muted);font-size:12px;text-align:center;margin:12px 0 4px}
 @media (prefers-reduced-motion: reduce){.chev{transition:none}}
+
+#buscar-ley{font-family:var(--font-ui)}
+.leyes{display:flex;flex-direction:column;gap:18px}
+.grupo{display:flex;flex-direction:column;gap:8px}
+.grupo-titulo{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.ley{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;color:var(--fg);text-decoration:none}
+.ley:hover{border-color:var(--accent)}
+.ley:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.ley-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ley-corto{font-weight:600;font-size:15px}
+.ley-largo{font-size:13px;color:var(--muted)}
+.ley-ref{font-family:var(--font-num);font-size:12px;color:var(--muted)}
+.ley svg{flex:none;color:var(--accent)}
 </style>
 </head>
 <body>
@@ -142,6 +155,28 @@ footer{font-size:12px;color:var(--muted);padding-top:8px}
   </div>
 
   <p class="note">Umbral: acopio de 5 días de consumo según el Instituto Nacional de Toxicología, aplicado por el Tribunal Supremo (Pleno de 19/10/2001). La cantidad es un indicio, no una regla fija: otros indicios de venta pueden llevar a la vía penal con menos cantidad.</p>
+    </div>
+   </section>
+
+   <section class="tool" id="t-leyes">
+    <button class="tool-head" type="button" aria-expanded="false" aria-controls="b-leyes">
+      <span class="tool-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/><path d="M8 7h7"/><path d="M8 11h5"/></svg>
+      </span>
+      <span class="tool-text">
+        <span class="tool-title">Guía de leyes</span>
+        <span class="tool-desc">Acceso directo al texto consolidado en el BOE</span>
+      </span>
+      <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="tool-body" id="b-leyes" hidden>
+      <div>
+        <label for="buscar-ley">Buscar</label>
+        <input id="buscar-ley" type="search" placeholder="Ej.: tráfico, 4/2015, menores" autocomplete="off">
+      </div>
+      <div id="lista-leyes" class="leyes"></div>
+      <p class="note" id="sin-leyes" hidden>No hay ninguna ley que coincida con la búsqueda.</p>
+      <p class="note">Los enlaces abren la versión consolidada (vigente) en boe.es.</p>
     </div>
    </section>
   </div>
@@ -208,6 +243,65 @@ function calc(){
 ["droga","cantidad","unidad"].forEach(id=>{$(id).addEventListener("input",calc);$(id).addEventListener("change",calc)});
 $("f").addEventListener("submit",e=>e.preventDefault());
 calc();
+
+// ---------- Guía de leyes (enlaces ELI al texto consolidado del BOE) ----------
+const BOE = "https://www.boe.es/eli/";
+const LEYES = [
+  {g:"Penal y procesal", c:"Constitución Española", r:"CE 1978", t:"Constitución Española de 27 de diciembre de 1978", u:"es/c/1978/12/27/(1)/con"},
+  {g:"Penal y procesal", c:"Código Penal", r:"LO 10/1995", t:"Ley Orgánica 10/1995, de 23 de noviembre", u:"es/lo/1995/11/23/10/con"},
+  {g:"Penal y procesal", c:"Ley de Enjuiciamiento Criminal", r:"LECrim", t:"Real Decreto de 14 de septiembre de 1882", u:"es/rd/1882/09/14/(1)/con"},
+  {g:"Penal y procesal", c:"Habeas corpus", r:"LO 6/1984", t:"Ley Orgánica 6/1984, de 24 de mayo", u:"es/lo/1984/05/24/6/con"},
+  {g:"Penal y procesal", c:"Responsabilidad penal de los menores", r:"LO 5/2000", t:"Ley Orgánica 5/2000, de 12 de enero", u:"es/lo/2000/01/12/5/con"},
+  {g:"Penal y procesal", c:"Estatuto de la víctima del delito", r:"Ley 4/2015", t:"Ley 4/2015, de 27 de abril", u:"es/l/2015/04/27/4/con"},
+
+  {g:"Seguridad ciudadana y policía", c:"Protección de la seguridad ciudadana", r:"LO 4/2015", t:"Ley Orgánica 4/2015, de 30 de marzo", u:"es/lo/2015/03/30/4/con"},
+  {g:"Seguridad ciudadana y policía", c:"Fuerzas y Cuerpos de Seguridad", r:"LO 2/1986", t:"Ley Orgánica 2/1986, de 13 de marzo", u:"es/lo/1986/03/13/2/con"},
+  {g:"Seguridad ciudadana y policía", c:"Coordinación de Policías Locales de Madrid", r:"Ley 1/2018 (Madrid)", t:"Ley 1/2018, de 22 de febrero, de la Comunidad de Madrid", u:"es-md/l/2018/02/22/1/con"},
+  {g:"Seguridad ciudadana y policía", c:"Derecho de reunión", r:"LO 9/1983", t:"Ley Orgánica 9/1983, de 15 de julio", u:"es/lo/1983/07/15/9/con"},
+
+  {g:"Tráfico", c:"Ley de Tráfico y Seguridad Vial", r:"RDLeg 6/2015", t:"Real Decreto Legislativo 6/2015, de 30 de octubre", u:"es/rdlg/2015/10/30/6/con"},
+  {g:"Tráfico", c:"Reglamento General de Circulación", r:"RD 1428/2003", t:"Real Decreto 1428/2003, de 21 de noviembre", u:"es/rd/2003/11/21/1428/con"},
+  {g:"Tráfico", c:"Reglamento General de Conductores", r:"RD 818/2009", t:"Real Decreto 818/2009, de 8 de mayo", u:"es/rd/2009/05/08/818/con"},
+  {g:"Tráfico", c:"Reglamento General de Vehículos", r:"RD 2822/1998", t:"Real Decreto 2822/1998, de 23 de diciembre", u:"es/rd/1998/12/23/2822/con"},
+
+  {g:"Violencia y protección", c:"Violencia de género", r:"LO 1/2004", t:"Ley Orgánica 1/2004, de 28 de diciembre", u:"es/lo/2004/12/28/1/con"},
+  {g:"Violencia y protección", c:"Libertad sexual", r:"LO 10/2022", t:"Ley Orgánica 10/2022, de 6 de septiembre", u:"es/lo/2022/09/06/10/con"},
+  {g:"Violencia y protección", c:"Protección de la infancia (LOPIVI)", r:"LO 8/2021", t:"Ley Orgánica 8/2021, de 4 de junio", u:"es/lo/2021/06/04/8/con"},
+
+  {g:"Extranjería", c:"Derechos y libertades de los extranjeros", r:"LO 4/2000", t:"Ley Orgánica 4/2000, de 11 de enero", u:"es/lo/2000/01/11/4/con"},
+
+  {g:"Animales", c:"Bienestar animal", r:"Ley 7/2023", t:"Ley 7/2023, de 28 de marzo", u:"es/l/2023/03/28/7/con"},
+  {g:"Animales", c:"Animales potencialmente peligrosos", r:"Ley 50/1999", t:"Ley 50/1999, de 23 de diciembre", u:"es/l/1999/12/23/50/con"},
+
+  {g:"Administrativo", c:"Procedimiento administrativo común", r:"Ley 39/2015", t:"Ley 39/2015, de 1 de octubre", u:"es/l/2015/10/01/39/con"},
+  {g:"Administrativo", c:"Bases del Régimen Local", r:"Ley 7/1985", t:"Ley 7/1985, de 2 de abril", u:"es/l/1985/04/02/7/con"},
+  {g:"Administrativo", c:"Protección de datos", r:"LO 3/2018", t:"Ley Orgánica 3/2018, de 5 de diciembre", u:"es/lo/2018/12/05/3/con"},
+];
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const flecha = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg>';
+function pintarLeyes(){
+  const q = norm($("buscar-ley").value.trim());
+  const lista = $("lista-leyes"); lista.textContent = "";
+  const grupos = {};
+  LEYES.filter(l => !q || norm(l.g+" "+l.c+" "+l.r+" "+l.t).includes(q))
+       .forEach(l => (grupos[l.g] = grupos[l.g] || []).push(l));
+  Object.entries(grupos).forEach(([g,ls])=>{
+    const div = document.createElement("div"); div.className="grupo";
+    const h = document.createElement("span"); h.className="grupo-titulo"; h.textContent=g; div.appendChild(h);
+    ls.forEach(l=>{
+      const a = document.createElement("a"); a.className="ley"; a.href=BOE+l.u; a.target="_blank"; a.rel="noopener";
+      a.innerHTML = '<span class="ley-text"><span class="ley-corto"></span><span class="ley-largo"></span><span class="ley-ref"></span></span>'+flecha;
+      a.querySelector(".ley-corto").textContent=l.c;
+      a.querySelector(".ley-largo").textContent=l.t;
+      a.querySelector(".ley-ref").textContent=l.r;
+      div.appendChild(a);
+    });
+    lista.appendChild(div);
+  });
+  $("sin-leyes").hidden = Object.keys(grupos).length>0;
+}
+$("buscar-ley").addEventListener("input",pintarLeyes);
+pintarLeyes();
 
 // Desplegar / plegar herramientas
 document.querySelectorAll(".tool").forEach(tool=>{
