@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Calculadora orientativa: vía administrativa o penal según la cantidad de droga.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<title>Calculadora de Tenencia</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: una sola columna centrada, formulario arriba y veredicto grande debajo */
+:root{
+  --bg:#eef1f5; --surface:#ffffff; --fg:#17202c; --muted:#5a6676; --line:#d5dbe3;
+  --accent:#1f3a5f;
+  --adm:#1d6b45; --adm-bg:#e3f2ea;
+  --pen:#a3261c; --pen-bg:#fbe7e4;
+  --font-ui:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-num:"IBM Plex Mono",ui-monospace,"SF Mono",monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141b; --surface:#18202b; --fg:#e6ebf2; --muted:#98a4b5; --line:#2b3644;
+  --accent:#8fb3e0; --adm:#6fd3a0; --adm-bg:#14301f; --pen:#ff8a7d; --pen-bg:#3a1714; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --surface:#18202b; --fg:#e6ebf2; --muted:#98a4b5; --line:#2b3644;
+  --accent:#8fb3e0; --adm:#6fd3a0; --adm-bg:#14301f; --pen:#ff8a7d; --pen-bg:#3a1714; color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--font-ui);font-size:16px;line-height:1.5}
+.wrap{max-width:520px;margin:0 auto;padding-block:32px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-direction:column;gap:4px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{margin:0;font-size:26px;line-height:1.2;text-wrap:balance}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:16px}
+label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px}
+select,input{width:100%;box-sizing:border-box;font:inherit;font-size:17px;color:var(--fg);background:var(--bg);
+  border:1px solid var(--line);border-radius:8px;padding:12px}
+input{font-family:var(--font-num);font-variant-numeric:tabular-nums}
+select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.row{display:grid;grid-template-columns:1fr 110px;gap:12px}
+.row>div{min-width:0}
+
+.result{border-radius:10px;padding:22px 20px;display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);background:var(--surface)}
+.result .tag{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+.result .verdict{font-size:28px;font-weight:700;line-height:1.15}
+.result .law{font-size:14px;color:var(--muted)}
+.result.adm{background:var(--adm-bg);border-color:transparent}
+.result.adm .tag,.result.adm .verdict{color:var(--adm)}
+.result.pen{background:var(--pen-bg);border-color:transparent}
+.result.pen .tag,.result.pen .verdict{color:var(--pen)}
+.result.idle .verdict{color:var(--muted);font-size:20px}
+.limit{font-family:var(--font-num);font-variant-numeric:tabular-nums;font-size:14px;color:var(--fg)}
+
+.note{font-size:13px;color:var(--muted);margin:0}
+.aviso{font-size:13px;color:var(--fg);border-top:1px solid var(--line);padding-top:10px;margin-top:6px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Herramienta orientativa</span>
+    <h1>¿Vía administrativa o penal?</h1>
+  </header>
+
+  <form class="card" id="f" autocomplete="off">
+    <div>
+      <label for="droga">Sustancia</label>
+      <select id="droga"></select>
+    </div>
+    <div class="row">
+      <div>
+        <label for="cantidad">Cantidad total</label>
+        <input id="cantidad" type="number" inputmode="decimal" min="0" step="any" value="12">
+      </div>
+      <div>
+        <label for="unidad">Unidad</label>
+        <select id="unidad">
+          <option value="0.000001">µg</option>
+          <option value="0.001">mg</option>
+          <option value="1" selected>g</option>
+          <option value="1000">kg</option>
+        </select>
+      </div>
+    </div>
+  </form>
+
+  <div class="result idle" id="res" aria-live="polite">
+    <span class="tag" id="tag"></span>
+    <span class="verdict" id="verdict">Introduce una cantidad</span>
+    <span class="law" id="law"></span>
+    <span class="limit" id="limit"></span>
+    <span class="aviso" id="aviso" hidden></span>
+  </div>
+
+  <p class="note">Umbral: acopio de 5 días de consumo según el Instituto Nacional de Toxicología, aplicado por el Tribunal Supremo (Pleno de 19/10/2001). La cantidad es un indicio, no una regla fija: otros indicios de venta pueden llevar a la vía penal con menos cantidad.</p>
+</div>
+
+<script>
+// limite = acopio 5 días (g); notoria = notoria importancia (g)
+const DROGAS = [
+  {n:"Marihuana",                limite:100,    notoria:10000},
+  {n:"Hachís",                   limite:25,     notoria:2500},
+  {n:"Aceite de hachís",         limite:3,      notoria:300},
+  {n:"Cocaína",                  limite:7.5,    notoria:750},
+  {n:"Heroína",                  limite:3,      notoria:300},
+  {n:"MDMA / éxtasis",           limite:2.4,    notoria:240},
+  {n:"Anfetamina (speed)",       limite:0.9,    notoria:90},
+  {n:"Metanfetamina",            limite:0.3,    notoria:30},
+  {n:"LSD",                      limite:0.003,  notoria:0.3},
+  {n:"Tusi (cocaína rosa)",      limite:2.6,    notoria:null,
+   aviso:"Sin umbral oficial. Mezcla variable (sobre todo ketamina y MDMA): límite orientativo estimado; lo determinante es el análisis de laboratorio de cada componente."},
+];
+const $ = id => document.getElementById(id);
+const sel = $("droga");
+DROGAS.forEach((d,i)=>{const o=document.createElement("option");o.value=i;o.textContent=d.n;sel.appendChild(o)});
+
+function fmt(g){
+  if (g>=1000) return (g/1000).toLocaleString("es-ES",{maximumFractionDigits:3})+" kg";
+  if (g>=1)    return g.toLocaleString("es-ES",{maximumFractionDigits:3})+" g";
+  if (g>=0.001)return (g*1000).toLocaleString("es-ES",{maximumFractionDigits:3})+" mg";
+  return (g*1e6).toLocaleString("es-ES",{maximumFractionDigits:3})+" µg";
+}
+
+function calc(){
+  const d = DROGAS[sel.value];
+  const q = parseFloat($("cantidad").value);
+  const res = $("res");
+  if (!(q>0)){
+    $("aviso").hidden = true;
+    res.className="result idle"; $("tag").textContent=""; $("verdict").textContent="Introduce una cantidad";
+    $("law").textContent=""; $("limit").textContent=""; return;
+  }
+  const g = q * parseFloat($("unidad").value);
+  $("aviso").hidden = !d.aviso; $("aviso").textContent = d.aviso || "";
+  $("limit").textContent = `${fmt(g)} introducidos · límite autoconsumo ${fmt(d.limite)}`;
+  if (g <= d.limite){
+    res.className="result adm";
+    $("tag").textContent="Infracción administrativa";
+    $("verdict").textContent="Vía administrativa";
+    $("law").textContent="Art. 36.16 LO 4/2015 (tenencia en lugar público). Multa de 601 a 30.000 €.";
+  } else if (d.notoria && g >= d.notoria){
+    res.className="result pen";
+    $("tag").textContent="Delito · notoria importancia";
+    $("verdict").textContent="Vía penal";
+    $("law").textContent="Arts. 368 y 369.1.5ª CP. Supera la notoria importancia ("+fmt(d.notoria)+").";
+  } else {
+    res.className="result pen";
+    $("tag").textContent="Delito contra la salud pública";
+    $("verdict").textContent="Vía penal";
+    $("law").textContent="Art. 368 CP. Supera el acopio de 5 días, indicio de tráfico.";
+  }
+}
+["droga","cantidad","unidad"].forEach(id=>{$(id).addEventListener("input",calc);$(id).addEventListener("change",calc)});
+$("f").addEventListener("submit",e=>e.preventDefault());
+calc();
+</script>
+</body>
+</html>
