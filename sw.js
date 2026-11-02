@@ -1,6 +1,6 @@
 // Tercio Suite: funciona sin conexión.
 // Al publicar cambios, sube el número de versión para que los móviles descarguen la nueva.
-const VERSION = "tercio-suite-v5";
+const VERSION = "tercio-suite-v6";
 const ARCHIVOS = [
   "./",
   "./index.html",
@@ -28,6 +28,8 @@ self.addEventListener("fetch", e => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
+  // Las estadísticas de Vercel van siempre por la red, nunca desde la copia guardada
+  if (url.pathname.startsWith("/_vercel/")) return;
 
   // Página: primero la red (para tener siempre lo último) y, sin cobertura, la copia guardada.
   if (req.mode === "navigate") {
